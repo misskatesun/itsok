@@ -61,7 +61,7 @@
 
         .input-group {
             text-align: left;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .input-group label {
@@ -79,7 +79,7 @@
             margin-bottom: 8px;
         }
 
-        input[type="text"] {
+        input[type="text"], textarea {
             width: 100%;
             padding: 12px 15px;
             border-radius: 12px;
@@ -89,14 +89,44 @@
             font-size: 1rem;
             outline: none;
             transition: all 0.3s ease;
+            font-family: inherit;
         }
 
-        input[type="text"]:focus {
+        textarea {
+            height: 90px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input[type="text"]:focus, textarea:focus {
             border-color: var(--pink-glow);
             box-shadow: 0 0 10px rgba(255, 126, 187, 0.4);
         }
 
-        button {
+        /* 性別稱呼單選框樣式 */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 6px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #f0f3ff;
+        }
+
+        .radio-label input[type="radio"] {
+            margin-right: 6px;
+            accent-color: var(--pink-glow);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
             background: linear-gradient(135deg, #a88beb 0%, #ff60a8 100%);
             color: white;
             border: none;
@@ -108,17 +138,17 @@
             transition: 0.3s;
             width: 100%;
             box-shadow: 0 4px 15px rgba(255, 96, 168, 0.4);
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
-        button:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 96, 168, 0.6);
         }
 
-        /* 預覽與輸出的卡片樣式 */
+        /* 生成的小卡區域 */
         #card-capture {
-            display: none; /* 點擊後顯示 */
+            display: none;
             background: linear-gradient(180deg, #181530 0%, #0d0b1a 100%);
             border: 2px solid var(--pink-glow);
             border-radius: 20px;
@@ -135,15 +165,10 @@
             word-break: break-word;
         }
 
-        .card-content .highlight {
-            color: #ffe366;
-            font-weight: bold;
-        }
-
         .card-praise {
             margin-top: 20px;
             padding-top: 15px;
-            border-top: 1px stroke rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             font-size: 1.1rem;
             color: #ff9ebb;
             font-weight: 600;
@@ -168,20 +193,32 @@
             letter-spacing: 1px;
         }
 
-        .download-btn {
-            display: inline-block;
-            margin-top: 15px;
-            color: #ff7ebb;
-            font-size: 0.95rem;
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+        /* 📸 生成分享圖片 按鈕樣式 */
+        .download-action-box {
+            margin-top: 25px;
+            text-align: center;
         }
 
-        .download-btn:hover {
-            color: #ffffff;
-            text-shadow: 0 0 8px var(--pink-glow);
+        .btn-generate-image {
+            display: inline-block;
+            padding: 12px 28px;
+            background: rgba(255, 126, 187, 0.15);
+            border: 1px solid var(--pink-glow);
+            color: #ff7ebb;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 0 10px rgba(255, 126, 187, 0.2);
+        }
+
+        .btn-generate-image:hover {
+            background: var(--pink-glow);
+            color: #100d21;
+            box-shadow: 0 0 18px rgba(255, 126, 187, 0.6);
+            transform: translateY(-2px);
         }
 
         /* 社群與捐款區塊 */
@@ -255,12 +292,43 @@
             margin-bottom: 15px;
         }
 
-        .close-btn {
+        /* 右側中間懸浮關閉按鈕 */
+        .floating-close-btn {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #ffffff;
             color: #ffffff;
-            margin-top: 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .floating-close-btn:hover {
+            background: var(--pink-glow);
+            color: #100d21;
+            border-color: var(--pink-glow);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .close-bottom-link {
+            color: #ffffff;
+            margin-top: 10px;
             cursor: pointer;
             text-decoration: underline;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .save-tip {
@@ -282,33 +350,49 @@
 <div class="main-container">
     <h1>💖放過自己、愛自己💖<br><span style="font-size:1.2rem; font-weight:normal;">提醒小卡生產器</span></h1>
 
-    <!-- 輸入區塊 -->
+    <!-- 姓名欄位 -->
     <div class="input-group">
         <label for="name-input">姓名：</label>
         <input type="text" id="name-input" placeholder="請輸入你的名字或暱稱">
     </div>
 
+    <!-- 人稱單選欄位 -->
     <div class="input-group">
-        <label for="flaw-input">寫下你覺得自己做得不夠好的部分，或是世俗認為的「缺點」：</label>
-        <div class="sub-label">例如：錢賺很少、很懶惰、沒耐心、喜歡耍廢</div>
-        <input type="text" id="flaw-input" placeholder="例如：錢賺很少、喜歡耍廢">
+        <label>想被稱呼為：</label>
+        <div class="radio-group">
+            <label class="radio-label">
+                <input type="radio" name="gender-pronoun" value="你" checked> 你
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="gender-pronoun" value="妳"> 妳
+            </label>
+        </div>
     </div>
 
-    <button onclick="generateCard()">✨ 一鍵生成愛自己小卡 ✨</button>
+    <!-- 缺點輸入欄位 (改為長文字區塊，不帶提示字) -->
+    <div class="input-group">
+        <label for="flaw-input">寫下你覺得自己做得不夠好的部分或是世俗認為的「缺點」：</label>
+        <div class="sub-label">例如：錢賺很少、很懶惰、沒耐心、喜歡耍廢</div>
+        <textarea id="flaw-input"></textarea>
+    </div>
 
-    <!-- 生成的小卡區塊 (可截圖/導出) -->
+    <button class="btn-submit" onclick="generateCard()">✨ 一鍵生成愛自己小卡 ✨</button>
+
+    <!-- 生成的小卡區塊 -->
     <div id="card-capture">
         <div class="card-content" id="card-text"></div>
         <div class="card-praise" id="card-praise-text"></div>
         
         <div class="card-img-box">
-            <!-- 圖片檔名請設定為 inner-self.jpg 並放在同一個目錄 -->
-            <img src="inner-self.jpg" alt="我的高我、小我、內在小孩">
-            <div class="card-img-caption">我的高我、小我、內在小孩♥︎</div>
+            <img src="inner-self.jpg" alt="高我、內在小孩與地球小我">
+            <div class="card-img-caption" id="card-img-title">的高我、內在小孩與地球小我♥︎</div>
         </div>
     </div>
 
-    <a id="download-link" class="download-link" style="display:none;" onclick="createImagePreview()">📸 生成分享圖片 (可長按存相簿)</a>
+    <!-- 生成分享圖片按鈕 -->
+    <div class="download-action-box" id="download-action-box" style="display:none;">
+        <button class="btn-generate-image" onclick="createImagePreview()">📸 生成分享圖片</button>
+    </div>
 
     <!-- 社群連結 -->
     <div class="social-links">
@@ -324,37 +408,54 @@
     </div>
 </div>
 
-<!-- 圖片預覽彈窗 (方便手機長按儲存) -->
+<!-- 圖片預覽彈窗 -->
 <div id="preview-overlay">
+    <!-- 右側中間懸浮關閉按鈕 ✕ -->
+    <div class="floating-close-btn" onclick="closePreview()" title="關閉視窗">✕</div>
+
     <div class="save-tip">✨ 請長按圖片選擇「儲存至相片」</div>
-    <img id="preview-image" src="" alt="愛自己提醒小卡">
-    <div class="close-btn" onclick="closePreview()">← 返回修改內容</div>
+    <img id="preview-image" src="" alt="提醒小卡">
+    <div class="close-bottom-link" onclick="closePreview()">← 返回修改內容</div>
 </div>
 
 <script>
+    let globalName = "";
+
     function generateCard() {
-        const name = document.getElementById('name-input').value.trim() || "親愛的";
-        const flaw = document.getElementById('flaw-input').value.trim() || "偶爾有些缺點";
+        globalName = document.getElementById('name-input').value.trim() || "親愛的";
+        const flaw = document.getElementById('flaw-input').value.trim();
+        
+        // 取得選擇的人稱 (你 / 妳)
+        const selectedPronoun = document.querySelector('input[name="gender-pronoun"]:checked').value;
+        const thirdPerson = (selectedPronoun === "妳") ? "她" : "他";
+        const secondPerson = selectedPronoun;
 
-        const cardText = `${name}${flaw}也沒關係、就是體驗而已<br>` +
-                         `本質的${name}是宇宙的源頭、<br>` +
+        // 缺點內容邏輯
+        const flawDisplay = flaw ? flaw : "偶爾有些缺點";
+
+        // 卡片主要內容與換行設定
+        const cardText = `${globalName}${flawDisplay}<br>也沒關係、<br>就是體驗而已<br>` +
+                         `本質的${globalName}是宇宙的源頭、<br>` +
                          `是無條件的愛<br>` +
-                         `這一切都是為了${name}最好最理想的體驗<br>` +
-                         `讓${name}感受到萬事萬物對他無條件的愛<br>` +
-                         `謝謝你、我愛你💖`;
+                         `這一切都是為了${globalName}最好最理想的體驗<br>` +
+                         `讓${globalName}感受到萬事萬物對${thirdPerson}無條件的愛<br>` +
+                         `謝謝${secondPerson}、我愛${secondPerson}💖`;
 
-        const praiseText = `${name}、你怎麼這麼棒<br>` +
+        const praiseText = `${globalName}、${secondPerson}怎麼這麼棒<br>` +
                            `全世界最棒的人是誰<br>` +
-                           `就是你！<br>` +
-                           `我太愛你了～`;
+                           `就是${secondPerson}！<br>` +
+                           `我太愛${secondPerson}了～`;
 
         document.getElementById('card-text').innerHTML = cardText;
         document.getElementById('card-praise-text').innerHTML = praiseText;
+        
+        // 更新圖片下方標題
+        document.getElementById('card-img-title').innerText = `${globalName}的高我、內在小孩與地球小我♥︎`;
 
         const cardArea = document.getElementById('card-capture');
         cardArea.style.display = 'block';
         
-        document.getElementById('download-link').style.display = 'inline-block';
+        document.getElementById('download-action-box').style.display = 'block';
 
         // 平滑捲動至圖卡
         cardArea.scrollIntoView({ behavior: 'smooth' });
@@ -362,23 +463,23 @@
 
     function createImagePreview() {
         const target = document.getElementById('card-capture');
-        const dlLink = document.getElementById('download-link');
-        dlLink.innerText = "圖片生成中...";
+        const btn = document.querySelector('.btn-generate-image');
+        btn.innerText = "⏳ 圖片生成中...";
 
         html2canvas(target, {
             useCORS: true,
-            scale: 3, // 高解析度
-            backgroundColor: "#131124",
+            scale: 3,
+            backgroundColor: "#100d21",
             logging: false
         }).then(canvas => {
             const previewOverlay = document.getElementById('preview-overlay');
             const previewImage = document.getElementById('preview-image');
             previewImage.src = canvas.toDataURL('image/png');
             previewOverlay.style.display = 'flex';
-            dlLink.innerText = "📸 生成分享圖片 (可長按存相簿)";
+            btn.innerText = "📸 生成分享圖片";
         }).catch(err => {
             alert("生成圖片失敗，請稍後再試！");
-            dlLink.innerText = "📸 生成分享圖片 (可長按存相簿)";
+            btn.innerText = "📸 生成分享圖片";
         });
     }
 
