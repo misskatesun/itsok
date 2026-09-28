@@ -152,31 +152,33 @@
             background: linear-gradient(180deg, #181530 0%, #0d0b1a 100%);
             border: 2px solid var(--pink-glow);
             border-radius: 20px;
-            padding: 25px 20px;
+            padding: 30px 20px;
             margin-top: 25px;
             box-shadow: 0 0 25px rgba(255, 126, 187, 0.3);
             text-align: center;
         }
 
-        .card-content {
-            font-size: 1.15rem;
-            line-height: 1.8;
+        .card-paragraph {
+            font-size: 1.05rem;
+            line-height: 1.7;
             color: #ffffff;
             word-break: break-word;
+            margin-bottom: 16px;
         }
 
         .card-praise {
             margin-top: 20px;
-            padding-top: 15px;
+            padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: #ff9ebb;
             font-weight: 600;
-            line-height: 1.6;
+            line-height: 1.7;
+            margin-bottom: 20px;
         }
 
         .card-img-box {
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .card-img-box img {
@@ -187,10 +189,10 @@
         }
 
         .card-img-caption {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: #d1c4e9;
             margin-top: 8px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         /* 📸 生成分享圖片 按鈕樣式 */
@@ -270,7 +272,7 @@
             transform: translateY(-1px);
         }
 
-        /* 彈出視窗 (長按儲存圖片) */
+        /* 彈出視窗 (長按/下載圖片) */
         #preview-overlay {
             display: none;
             position: fixed;
@@ -282,14 +284,34 @@
             justify-content: center;
             backdrop-filter: blur(8px);
             padding: 20px;
+            overflow-y: auto;
         }
 
         #preview-image {
-            max-width: 90%;
-            max-height: 70vh;
+            max-width: 85%;
+            max-height: 60vh;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--pink-glow);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* 電腦版下載按鈕 */
+        .pc-download-btn {
+            display: inline-block;
+            margin-bottom: 12px;
+            padding: 8px 18px;
+            background: #a88beb;
+            color: #ffffff;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .pc-download-btn:hover {
+            background: var(--pink-glow);
+            color: #100d21;
         }
 
         /* 右側中間懸浮關閉按鈕 */
@@ -324,7 +346,7 @@
 
         .close-bottom-link {
             color: #ffffff;
-            margin-top: 10px;
+            margin-top: 5px;
             cursor: pointer;
             text-decoration: underline;
             font-size: 0.9rem;
@@ -333,15 +355,11 @@
 
         .save-tip {
             color: var(--pink-glow);
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             margin-bottom: 12px;
             font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+            line-height: 1.5;
+            text-align: center;
         }
     </style>
 </head>
@@ -369,7 +387,7 @@
         </div>
     </div>
 
-    <!-- 缺點輸入欄位 (改為長文字區塊，不帶提示字) -->
+    <!-- 缺點輸入欄位 -->
     <div class="input-group">
         <label for="flaw-input">寫下你覺得自己做得不夠好的部分或是世俗認為的「缺點」：</label>
         <div class="sub-label">例如：錢賺很少、很懶惰、沒耐心、喜歡耍廢</div>
@@ -380,8 +398,7 @@
 
     <!-- 生成的小卡區塊 -->
     <div id="card-capture">
-        <div class="card-content" id="card-text"></div>
-        <div class="card-praise" id="card-praise-text"></div>
+        <div id="card-body"></div>
         
         <div class="card-img-box">
             <img src="inner-self.jpg" alt="高我、內在小孩與地球小我">
@@ -413,8 +430,13 @@
     <!-- 右側中間懸浮關閉按鈕 ✕ -->
     <div class="floating-close-btn" onclick="closePreview()" title="關閉視窗">✕</div>
 
-    <div class="save-tip">✨ 請長按圖片選擇「儲存至相片」</div>
+    <div class="save-tip">✨ 電腦版請按右鍵下載圖片<br>手機版請長按圖片選擇「儲存至相片」</div>
+    
     <img id="preview-image" src="" alt="提醒小卡">
+    
+    <!-- 電腦版可以直接點此按鈕自動命名下載 -->
+    <a id="pc-download-link" class="pc-download-btn" href="" download="">⬇ 電腦版點此直接下載圖片</a>
+
     <div class="close-bottom-link" onclick="closePreview()">← 返回修改內容</div>
 </div>
 
@@ -423,31 +445,49 @@
 
     function generateCard() {
         globalName = document.getElementById('name-input').value.trim() || "親愛的";
-        const flaw = document.getElementById('flaw-input').value.trim();
-        
+        let flaw = document.getElementById('flaw-input').value.trim();
+
         // 取得選擇的人稱 (你 / 妳)
         const selectedPronoun = document.querySelector('input[name="gender-pronoun"]:checked').value;
         const thirdPerson = (selectedPronoun === "妳") ? "她" : "他";
         const secondPerson = selectedPronoun;
 
-        // 缺點內容邏輯
-        const flawDisplay = flaw ? flaw : "偶爾有些缺點";
+        // 缺點遇到標點符號自動換行處理
+        if (flaw) {
+            flaw = flaw.replace(/([、，,])/g, "$1<br>");
+        } else {
+            flaw = "偶爾有些缺點";
+        }
 
-        // 卡片主要內容與換行設定
-        const cardText = `${globalName}${flawDisplay}<br>也沒關係、<br>就是體驗而已<br>` +
-                         `本質的${globalName}是宇宙的源頭、<br>` +
-                         `是無條件的愛<br>` +
-                         `這一切都是為了${globalName}最好最理想的體驗<br>` +
-                         `讓${globalName}感受到萬事萬物對${thirdPerson}無條件的愛<br>` +
-                         `謝謝${secondPerson}、我愛${secondPerson}💖`;
+        // 精準構建包含空行的 HTML 段落結構
+        const cardHtml = `
+            <div class="card-paragraph">
+                ${globalName}${flaw}也沒關係、<br>
+                就是體驗而已
+            </div>
+            
+            <div class="card-paragraph">
+                本質的${globalName}是宇宙的源頭、<br>
+                是無條件的愛
+            </div>
+            
+            <div class="card-paragraph">
+                這一切都是為了${globalName}<br>
+                最好最理想的地球體驗<br>
+                讓${globalName}感受到<br>
+                萬事萬物對${thirdPerson}無條件的愛<br>
+                謝謝你、我愛你💖
+            </div>
+            
+            <div class="card-praise">
+                全世界最棒的人是誰？<br>
+                就是${secondPerson}！<br>
+                ${globalName}、${secondPerson}怎麼這麼棒<br>
+                我太愛${secondPerson}了～
+            </div>
+        `;
 
-        const praiseText = `${globalName}、${secondPerson}怎麼這麼棒<br>` +
-                           `全世界最棒的人是誰<br>` +
-                           `就是${secondPerson}！<br>` +
-                           `我太愛${secondPerson}了～`;
-
-        document.getElementById('card-text').innerHTML = cardText;
-        document.getElementById('card-praise-text').innerHTML = praiseText;
+        document.getElementById('card-body').innerHTML = cardHtml;
         
         // 更新圖片下方標題
         document.getElementById('card-img-title').innerText = `${globalName}的高我、內在小孩與地球小我♥︎`;
@@ -474,7 +514,16 @@
         }).then(canvas => {
             const previewOverlay = document.getElementById('preview-overlay');
             const previewImage = document.getElementById('preview-image');
-            previewImage.src = canvas.toDataURL('image/png');
+            const pcDownloadLink = document.getElementById('pc-download-link');
+            
+            const imageDataUrl = canvas.toDataURL('image/png');
+            const fileName = `${globalName}是全世界最棒的存在.png`;
+
+            // 設定預覽圖片與電腦下載按鈕屬性
+            previewImage.src = imageDataUrl;
+            pcDownloadLink.href = imageDataUrl;
+            pcDownloadLink.download = fileName;
+
             previewOverlay.style.display = 'flex';
             btn.innerText = "📸 生成分享圖片";
         }).catch(err => {
