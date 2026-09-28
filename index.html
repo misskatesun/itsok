@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>💖放過自己、愛自己💖 提醒小卡生產器</title>
+    <meta property="og:title" content="💖放過自己、愛自己💖 提醒小卡生產器">
+    <meta property="og:description" content="寫下你覺得自己做得不夠好的部分，一鍵生成專屬療癒提醒小卡！">
+    <meta property="og:type" content="website">
+
+    <!-- html2canvas 用於生成圖卡 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-bg: #0b0c1b;
+            --card-bg: rgba(25, 23, 48, 0.75);
+            --pink-glow: #ff7ebb;
+            --purple-glow: #a88beb;
+            --text-color: #f0f3ff;
+            --accent-pink: #ff60a8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #090a15 0%, #17122b 50%, #0d0c1d 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 126, 187, 0.25);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 126, 187, 0.15);
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--pink-glow);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            color: #d1c4e9;
+            font-weight: bold;
+        }
+
+        .sub-label {
+            font-size: 0.85rem;
+            color: #b0a8b9;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(168, 139, 235, 0.4);
+            background: rgba(10, 10, 25, 0.6);
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--pink-glow);
+            box-shadow: 0 0 10px rgba(255, 126, 187, 0.4);
+        }
+
+        button {
+            background: linear-gradient(135deg, #a88beb 0%, #ff60a8 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 96, 168, 0.4);
+            margin-top: 15px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 96, 168, 0.6);
+        }
+
+        /* 預覽與輸出的卡片樣式 */
+        #card-capture {
+            display: none; /* 點擊後顯示 */
+            background: linear-gradient(180deg, #181530 0%, #0d0b1a 100%);
+            border: 2px solid var(--pink-glow);
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-top: 25px;
+            box-shadow: 0 0 25px rgba(255, 126, 187, 0.3);
+            text-align: center;
+        }
+
+        .card-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #ffffff;
+            word-break: break-word;
+        }
+
+        .card-content .highlight {
+            color: #ffe366;
+            font-weight: bold;
+        }
+
+        .card-praise {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px stroke rgba(255, 255, 255, 0.15);
+            font-size: 1.1rem;
+            color: #ff9ebb;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .card-img-box {
+            margin-top: 20px;
+        }
+
+        .card-img-box img {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(168, 139, 235, 0.4);
+        }
+
+        .card-img-caption {
+            font-size: 0.9rem;
+            color: #d1c4e9;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 15px;
+            color: #ff7ebb;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .download-btn:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--pink-glow);
+        }
+
+        /* 社群與捐款區塊 */
+        .social-links {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            color: #e0d7ff;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid rgba(168, 139, 235, 0.4);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: 0.2s;
+            display: inline-block;
+            margin: 4px;
+        }
+
+        .social-links a:hover {
+            background: var(--purple-glow);
+            color: white;
+            box-shadow: 0 0 10px var(--purple-glow);
+        }
+
+        .support-btn {
+            margin-top: 12px;
+        }
+
+        .support-btn a {
+            text-decoration: none;
+            color: white;
+            font-size: 0.85rem;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, rgba(255, 96, 168, 0.6) 0%, rgba(168, 139, 235, 0.6) 100%);
+            border-radius: 12px;
+            transition: 0.2s;
+            display: inline-block;
+            margin: 6px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .support-btn a:hover {
+            background: linear-gradient(135deg, rgba(255, 96, 168, 0.9) 0%, rgba(168, 139, 235, 0.9) 100%);
+            transform: translateY(-1px);
+        }
+
+        /* 彈出視窗 (長按儲存圖片) */
+        #preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        #preview-image {
+            max-width: 90%;
+            max-height: 70vh;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--pink-glow);
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            color: #ffffff;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.95rem;
+        }
+
+        .save-tip {
+            color: var(--pink-glow);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h1>💖放過自己、愛自己💖<br><span style="font-size:1.2rem; font-weight:normal;">提醒小卡生產器</span></h1>
+
+    <!-- 輸入區塊 -->
+    <div class="input-group">
+        <label for="name-input">姓名：</label>
+        <input type="text" id="name-input" placeholder="請輸入你的名字或暱稱">
+    </div>
+
+    <div class="input-group">
+        <label for="flaw-input">寫下你覺得自己做得不夠好的部分，或是世俗認為的「缺點」：</label>
+        <div class="sub-label">例如：錢賺很少、很懶惰、沒耐心、喜歡耍廢</div>
+        <input type="text" id="flaw-input" placeholder="例如：錢賺很少、喜歡耍廢">
+    </div>
+
+    <button onclick="generateCard()">✨ 一鍵生成愛自己小卡 ✨</button>
+
+    <!-- 生成的小卡區塊 (可截圖/導出) -->
+    <div id="card-capture">
+        <div class="card-content" id="card-text"></div>
+        <div class="card-praise" id="card-praise-text"></div>
+        
+        <div class="card-img-box">
+            <!-- 圖片檔名請設定為 inner-self.jpg 並放在同一個目錄 -->
+            <img src="inner-self.jpg" alt="我的高我、小我、內在小孩">
+            <div class="card-img-caption">我的高我、小我、內在小孩♥︎</div>
+        </div>
+    </div>
+
+    <a id="download-link" class="download-link" style="display:none;" onclick="createImagePreview()">📸 生成分享圖片 (可長按存相簿)</a>
+
+    <!-- 社群連結 -->
+    <div class="social-links">
+        <a href="https://www.facebook.com/dorakatemon/" target="_blank">💙 凱特的FB</a>
+        <a href="https://www.instagram.com/katesuncourse/" target="_blank">🩷 凱特的IG</a>
+        <a href="https://www.youtube.com/@katesungoodlife" target="_blank">❤️ 凱特的YouTube</a>
+    </div>
+
+    <!-- 捐款支持連結 -->
+    <div class="support-btn">
+        <a href="https://p.ecpay.com.tw/C887CAB" target="_blank">☕ 台灣隨喜支持</a>
+        <a href="javascript:void(0)" onclick="goToPaypal()">🌎 海外隨喜支持</a>
+    </div>
+</div>
+
+<!-- 圖片預覽彈窗 (方便手機長按儲存) -->
+<div id="preview-overlay">
+    <div class="save-tip">✨ 請長按圖片選擇「儲存至相片」</div>
+    <img id="preview-image" src="" alt="愛自己提醒小卡">
+    <div class="close-btn" onclick="closePreview()">← 返回修改內容</div>
+</div>
+
+<script>
+    function generateCard() {
+        const name = document.getElementById('name-input').value.trim() || "親愛的";
+        const flaw = document.getElementById('flaw-input').value.trim() || "偶爾有些缺點";
+
+        const cardText = `${name}${flaw}也沒關係、就是體驗而已<br>` +
+                         `本質的${name}是宇宙的源頭、<br>` +
+                         `是無條件的愛<br>` +
+                         `這一切都是為了${name}最好最理想的體驗<br>` +
+                         `讓${name}感受到萬事萬物對他無條件的愛<br>` +
+                         `謝謝你、我愛你💖`;
+
+        const praiseText = `${name}、你怎麼這麼棒<br>` +
+                           `全世界最棒的人是誰<br>` +
+                           `就是你！<br>` +
+                           `我太愛你了～`;
+
+        document.getElementById('card-text').innerHTML = cardText;
+        document.getElementById('card-praise-text').innerHTML = praiseText;
+
+        const cardArea = document.getElementById('card-capture');
+        cardArea.style.display = 'block';
+        
+        document.getElementById('download-link').style.display = 'inline-block';
+
+        // 平滑捲動至圖卡
+        cardArea.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function createImagePreview() {
+        const target = document.getElementById('card-capture');
+        const dlLink = document.getElementById('download-link');
+        dlLink.innerText = "圖片生成中...";
+
+        html2canvas(target, {
+            useCORS: true,
+            scale: 3, // 高解析度
+            backgroundColor: "#131124",
+            logging: false
+        }).then(canvas => {
+            const previewOverlay = document.getElementById('preview-overlay');
+            const previewImage = document.getElementById('preview-image');
+            previewImage.src = canvas.toDataURL('image/png');
+            previewOverlay.style.display = 'flex';
+            dlLink.innerText = "📸 生成分享圖片 (可長按存相簿)";
+        }).catch(err => {
+            alert("生成圖片失敗，請稍後再試！");
+            dlLink.innerText = "📸 生成分享圖片 (可長按存相簿)";
+        });
+    }
+
+    function closePreview() {
+        document.getElementById('preview-overlay').style.display = 'none';
+    }
+
+    function goToPaypal() {
+        const user = "s9413494134";
+        const domain = "@gmail.com";
+        const url = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=" + user + domain + "&item_name=KateSunLoveCard&currency_code=USD";
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
