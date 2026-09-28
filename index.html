@@ -401,7 +401,7 @@
         <div id="card-body"></div>
         
         <div class="card-img-box">
-            <img src="inner-self.jpg" alt="高我、內在小孩與地球小我">
+            <img id="self-image" src="inner-selfm.jpg" alt="高我、內在小孩與地球小我">
             <div class="card-img-caption" id="card-img-title">的高我、內在小孩與地球小我♥︎</div>
         </div>
     </div>
@@ -430,7 +430,7 @@
     <!-- 右側中間懸浮關閉按鈕 ✕ -->
     <div class="floating-close-btn" onclick="closePreview()" title="關閉視窗">✕</div>
 
-    <div class="save-tip">✨ 電腦版請按右鍵下載圖片<br>手機版請長按圖片選擇「儲存至相片」</div>
+    <div class="save-tip">✨ 電腦版請直接點擊下方按鈕下載<br>手機版請長按圖片選擇「儲存至相片」</div>
     
     <img id="preview-image" src="" alt="提醒小卡">
     
@@ -451,6 +451,14 @@
         const selectedPronoun = document.querySelector('input[name="gender-pronoun"]:checked').value;
         const thirdPerson = (selectedPronoun === "妳") ? "她" : "他";
         const secondPerson = selectedPronoun;
+
+        // 根據性別稱呼自動更換對應的圖片檔名 (inner-selfm.jpg 或 inner-selff.jpg)
+        const selfImg = document.getElementById('self-image');
+        if (selectedPronoun === "妳") {
+            selfImg.src = "inner-selff.jpg";
+        } else {
+            selfImg.src = "inner-selfm.jpg";
+        }
 
         // 缺點遇到標點符號自動換行處理
         if (flaw) {
